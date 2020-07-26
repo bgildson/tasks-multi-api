@@ -1,7 +1,5 @@
 name: Test and Push Image
-on:
-  push:
-  pull_request:
+on: ["push", "pull_request"]
 
 jobs:
   test:
@@ -29,7 +27,7 @@ jobs:
             outfile: coverage.lcov
 
       - name: Send report to coveralls
-        uses: coverallsapp/github-action@v1.0.2
+        uses: coverallsapp/github-action@master
         with:
             github-token: ${{ secrets.github_token }}
             path-to-lcov: coverage.lcov
