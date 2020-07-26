@@ -1,0 +1,35 @@
+name: Test and Push Image
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    strategy:
+      matrix:
+        go-version: [1.14.x]
+        platform: [ubuntu-latest]
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - name: Install Go
+        uses: actions/setup-go@v1
+        with:
+          go-version: ${{ matrix.go-version }}
+
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Calc coverage
+        run: go test ./... -v -covermode=count -coverprofile=coverage.out
+
+      - name: Convert coverage to lcov
+        uses: jandelgado/gcov2lcov-action@v1.0.2
+        with:
+            infile: coverage.out
+            outfile: coverage.lcov
+
+      - name: Send report to coveralls
+        uses: coverallsapp/github-action@v1.0.2
+        with:
+            github-token: ${{ secrets.github_token }}
+            path-to-lcov: coverage.lcov
